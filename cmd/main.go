@@ -1,6 +1,10 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+	"math/bits"
+)
 
 type Serializable interface {
 	Serialize(ser Serializer) ([]byte, error)
@@ -16,7 +20,7 @@ type Serializer interface {
 	SerializeUint32(value uint32) error
 	SerializeUint64(value uint64) error
 	SerializeString(value string) error
-    SerializeSlise(value []any) error
+	SerializeSlise(value []any) error
 	End() ([]byte, error)
 }
 
@@ -54,9 +58,9 @@ func New(capacity uint) *BinarySerializer {
 */
 
 func IntegerToVarint(value uint64, buf []byte) error {
-    return nil
+	return nil
 }
- 
+
 func (b *BinarySerializer) SerializeInt8(value int8) error {
 	return nil
 }
@@ -101,7 +105,51 @@ func (b *BinarySerializer) End() ([]byte, error) {
 	return nil, nil
 }
 
-func main() {
+func UnsignedToVarint(buf []byte, val uint64) ([]byte, error) {
 
-	fmt.Printf("Hello, serialization!\n")
+	// todo: append prefix with type of data and some additional info (count for arrays and etc.)
+
+	bitsLen := bits.Len64(val)
+	remainder := bitsLen % 7
+	bytesLen := bitsLen / 7
+	if remainder > 0 {
+		bytesLen += 1
+	}
+	for i := 0; i < bytesLen; i++ {
+		curByte := byte((val >> (7 * i)) & (0x7f))
+		if i < bytesLen-1 {
+			curByte |= 0x80
+		}
+		buf = append(buf, curByte)
+	}
+	return buf, nil
+}
+
+
+func SignedToVarint(buf []byte, val int64) error {
+	return nil
+}
+
+// print varints in buf
+func debugSlice(buf []byte) {
+    for _, byte := range buf {
+        fmt.Printf("%08b ", byte)
+        if (byte & 0x80) == 0 {
+            fmt.Print("\n")
+        }
+	}
+}
+
+func main() {
+	buf := make([]byte, 0, 10)
+	buf, _ = UnsignedToVarint(buf, 1)
+	buf, _ = UnsignedToVarint(buf, 8)
+	buf, _ = UnsignedToVarint(buf, 16)
+	buf, _ = UnsignedToVarint(buf, 32)
+	buf, _ = UnsignedToVarint(buf, 128) // in to bytes
+	buf, _ = UnsignedToVarint(buf, 512) // in to bytes
+	buf, _ = UnsignedToVarint(buf, 1024) // in to bytes
+	buf, _ = UnsignedToVarint(buf, 1024) // in to bytes
+	buf, _ = UnsignedToVarint(buf, math.MaxUint64) // in to bytes
+	debugSlice(buf)
 }
