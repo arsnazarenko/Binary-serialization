@@ -125,18 +125,32 @@ func UnsignedToVarint(buf []byte, val uint64) ([]byte, error) {
 	return buf, nil
 }
 
+func SignedToVarint(buf []byte, val int64) ([]byte, error) {
+	unsignedVal := uint64((val << 1) ^ (val >> (64 - 1)))
 
-func SignedToVarint(buf []byte, val int64) error {
-	return nil
+	bitsLen := bits.Len64(unsignedVal)
+	remainder := bitsLen % 7
+	bytesLen := bitsLen / 7
+	if remainder > 0 {
+		bytesLen += 1
+	}
+	for i := 0; i < bytesLen; i++ {
+		curByte := byte((unsignedVal >> (7 * i)) & (0x7f))
+		if i < bytesLen-1 {
+			curByte |= 0x80
+		}
+		buf = append(buf, curByte)
+	}
+	return buf, nil
 }
 
 // print varints in buf
 func debugSlice(buf []byte) {
-    for _, byte := range buf {
-        fmt.Printf("%08b ", byte)
-        if (byte & 0x80) == 0 {
-            fmt.Print("\n")
-        }
+	for _, byte := range buf {
+		fmt.Printf("%08b ", byte)
+		if (byte & 0x80) == 0 {
+			fmt.Print("\n")
+		}
 	}
 }
 
@@ -146,10 +160,10 @@ func main() {
 	buf, _ = UnsignedToVarint(buf, 8)
 	buf, _ = UnsignedToVarint(buf, 16)
 	buf, _ = UnsignedToVarint(buf, 32)
-	buf, _ = UnsignedToVarint(buf, 128) // in to bytes
-	buf, _ = UnsignedToVarint(buf, 512) // in to bytes
-	buf, _ = UnsignedToVarint(buf, 1024) // in to bytes
-	buf, _ = UnsignedToVarint(buf, 1024) // in to bytes
+	buf, _ = UnsignedToVarint(buf, 128)            // in to bytes
+	buf, _ = UnsignedToVarint(buf, 512)            // in to bytes
+	buf, _ = UnsignedToVarint(buf, 1024)           // in to bytes
+	buf, _ = UnsignedToVarint(buf, 1024)           // in to bytes
 	buf, _ = UnsignedToVarint(buf, math.MaxUint64) // in to bytes
 	debugSlice(buf)
 }
