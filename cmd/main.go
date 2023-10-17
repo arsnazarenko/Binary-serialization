@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math"
 	"math/bits"
 )
 
@@ -154,16 +153,13 @@ func debugSlice(buf []byte) {
 	}
 }
 
-func main() {
-	buf := make([]byte, 0, 10)
-	buf, _ = UnsignedToVarint(buf, 1)
-	buf, _ = UnsignedToVarint(buf, 8)
-	buf, _ = UnsignedToVarint(buf, 16)
-	buf, _ = UnsignedToVarint(buf, 32)
-	buf, _ = UnsignedToVarint(buf, 128)            // in to bytes
-	buf, _ = UnsignedToVarint(buf, 512)            // in to bytes
-	buf, _ = UnsignedToVarint(buf, 1024)           // in to bytes
-	buf, _ = UnsignedToVarint(buf, 1024)           // in to bytes
-	buf, _ = UnsignedToVarint(buf, math.MaxUint64) // in to bytes
-	debugSlice(buf)
+func main() { 
+    a := uint64(0xFFFFFFFFFFFFFFFF)
+    fmt.Printf("%064b\n", a)  
+    fmt.Printf("%064b\n", a >> 2) 
+
+    b := uint64(0x8000000000000000)
+    fmt.Printf("%064b\n", b)  
+    fmt.Printf("%064b\n", b >> 2)
 }
+
