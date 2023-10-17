@@ -19,7 +19,7 @@ func _serializeString(data string) ([]byte, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error in _serializeString: %w", err)
 	}
-	buf.Write(bytesLen)
+	buf.Write(bytesLen[1:])
 	buf.Write([]byte(data))
 
 	return buf.Bytes(), nil
@@ -32,7 +32,7 @@ func _deserializeString(data []byte) (string, uint64, error) {
 		offset uint64
 	)
 
-	countBytes, uintOffset, err := _deserializeUintMOCK(data[1:])
+	countBytes, uintOffset, err := _deserializeUintMOCK(data)
 	if err != nil {
 		return "", -1, fmt.Errorf("error in _deserializeString: %w", err)
 	}
