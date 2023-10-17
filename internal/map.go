@@ -41,9 +41,9 @@ func _deserializeMap(data []byte) (map[string]string, uint64, error) {
 		offset uint64
 	)
 
-	countEntry, uintOffset, err := _deserializeUintMOCK(data)
+	countEntry, uintOffset, err := _deserializeUint(data)
 	if err != nil {
-		return nil, -1, fmt.Errorf("error in _deserializeMap: %w", err)
+		return nil, 0, fmt.Errorf("error in _deserializeMap: %w", err)
 	}
 	offset += uintOffset
 
@@ -53,13 +53,13 @@ func _deserializeMap(data []byte) (map[string]string, uint64, error) {
 	for ; i < countEntry; i++ {
 		key, strKeyOffset, err := _deserializeString(data[offset:])
 		if err != nil {
-			return nil, -1, fmt.Errorf("error in _deserializeMap: %w", err)
+			return nil, 0, fmt.Errorf("error in _deserializeMap: %w", err)
 		}
 		offset += strKeyOffset
 
 		value, strValueOffset, err := _deserializeString(data[offset:])
 		if err != nil {
-			return nil, -1, fmt.Errorf("error in _deserializeMap: %w", err)
+			return nil, 0, fmt.Errorf("error in _deserializeMap: %w", err)
 		}
 		offset += strValueOffset
 
@@ -86,12 +86,12 @@ func SerializeMap(data map[string]string) ([]byte, error) {
 
 func DeserializeMap(data []byte) (map[string]string, uint64, error) {
 	if data[0] != MapTypeByte || data[1] != StringTypeByte || data[2] != StringTypeByte {
-		return nil, -1, fmt.Errorf("invalid row data")
+		return nil, 0, fmt.Errorf("invalid row data")
 	}
 
 	result, offset, err := _deserializeMap(data[3:])
 	if err != nil {
-		return nil, -1, err
+		return nil, 0, err
 	}
 	return result, offset + 3, nil
 }

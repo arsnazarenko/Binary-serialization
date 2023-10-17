@@ -32,9 +32,9 @@ func _deserializeString(data []byte) (string, uint64, error) {
 		offset uint64
 	)
 
-	countBytes, uintOffset, err := _deserializeUintMOCK(data)
+	countBytes, uintOffset, err := _deserializeUint(data)
 	if err != nil {
-		return "", -1, fmt.Errorf("error in _deserializeString: %w", err)
+		return "", 0, fmt.Errorf("error in _deserializeString: %w", err)
 	}
 	offset += uintOffset
 
@@ -61,17 +61,13 @@ func SerializeString(data string) ([]byte, error) {
 // DeserializeString serializes []byte to string
 func DeserializeString(data []byte) (string, uint64, error) {
 	if data[0] != StringTypeByte {
-		return "", -1, fmt.Errorf("invalid row data")
+		return "", 0, fmt.Errorf("invalid row data")
 	}
 
 	result, offset, err := _deserializeString(data[1:])
 	if err != nil {
-		return "", -1, err
+		return "", 0, err
 	}
 
 	return result, offset + 1, nil
-}
-
-func _deserializeUintMOCK(data []byte) (uint64, uint64, error) {
-	return 0, 0, nil
 }
