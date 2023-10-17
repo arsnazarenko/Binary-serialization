@@ -6,37 +6,72 @@ import (
 )
 
 // Binary schema for string (for payload use UTF-8)
-// [type] [len] [payload]...
+// [type] [payload_uint] [payload]...
 
 const (
-	StringType    byte = 0x3  // StringType like 00000011
-	MaxCountBytes byte = 0xFF // MaxCountBytes like 11111111
+	StringTypeByte byte = 0x3 // StringTypeByte like 00000011
 )
+
+func _serializeString(data string) ([]byte, error) {
+	var buf bytes.Buffer
+
+	bytesLen, err := SerializeUint(uint64(len(data)))
+	if err != nil {
+		return nil, fmt.Errorf("error in _serializeString: %w", err)
+	}
+	buf.Write(bytesLen)
+	buf.Write([]byte(data))
+
+	return buf.Bytes(), nil
+}
+
+// ok
+func _deserializeString(data []byte) (string, uint64, error) {
+	var (
+		buf    bytes.Buffer
+		offset uint64
+	)
+
+	countBytes, uintOffset, err := _deserializeUintMOCK(data[1:])
+	if err != nil {
+		return "", -1, fmt.Errorf("error in _deserializeString: %w", err)
+	}
+	offset += uintOffset
+
+	buf.Write(data[offset : offset+countBytes])
+	offset += countBytes
+
+	return buf.String(), offset, nil
+}
 
 // SerializeString serializes string to []byte
 func SerializeString(data string) ([]byte, error) {
-	if len(data) > int(MaxCountBytes) {
-		return nil, fmt.Errorf("too long string")
+	var buf bytes.Buffer
+
+	buf.WriteByte(StringTypeByte)
+	payload, err := _serializeString(data)
+	if err != nil {
+		return nil, fmt.Errorf("error in SerializeString: %w", err)
 	}
+	buf.Write(payload)
 
-	result := make([]byte, 0, 2+len(data))
-	result = append(result, StringType, byte(len(data)))
-	result = append(result, []byte(data)...)
-
-	return result, nil
+	return buf.Bytes(), nil
 }
 
 // DeserializeString serializes []byte to string
-func DeserializeString(data []byte) (string, error) {
-	var (
-		result            bytes.Buffer
-		countBytesPayload = int(data[1])
-	)
-
-	_, err := result.Write(data[2 : 2+countBytesPayload])
-	if err != nil {
-		return "", err
+func DeserializeString(data []byte) (string, uint64, error) {
+	if data[0] != StringTypeByte {
+		return "", -1, fmt.Errorf("invalid row data")
 	}
 
-	return result.String(), nil
+	result, offset, err := _deserializeString(data[1:])
+	if err != nil {
+		return "", -1, err
+	}
+
+	return result, offset + 1, nil
+}
+
+func _deserializeUintMOCK(data []byte) (uint64, uint64, error) {
+	return 0, 0, nil
 }
