@@ -14,8 +14,8 @@ type BinarySerializer struct {
 
 func NewBinarySerializer(capacity int) *BinarySerializer {
 	return &BinarySerializer{
-        buf: bytes.NewBuffer(make([]byte, 0, capacity)),
-    }
+		buf: bytes.NewBuffer(make([]byte, 0, capacity)),
+	}
 }
 
 func (bs *BinarySerializer) SerializeUint(value uint64) error {
@@ -92,17 +92,14 @@ func (bs *BinarySerializer) EndSerialize() []byte {
 	return dst
 }
 
-
-
 type BinaryDeserializer struct {
-    buf *bytes.Buffer
+	buf *bytes.Buffer
 }
 
-
 func NewBinaryDeserializer(from []byte) *BinaryDeserializer {
-    return &BinaryDeserializer{
-        buf: bytes.NewBuffer(from),
-    }
+	return &BinaryDeserializer{
+		buf: bytes.NewBuffer(from),
+	}
 }
 
 func (bd *BinaryDeserializer) DeserializeUint() (uint64, error) {
