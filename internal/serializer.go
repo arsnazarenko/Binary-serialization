@@ -5,7 +5,7 @@ type Serializer interface {
     SerializeInt(value int64) error
     SerializeString(value string) error
     SerializeFloat(value float64) error
-    SerializeStringKV(value map[string]string) error
+    SerializeStringMap(value map[string]string) error
     EndSerialize() []byte
 }
 
@@ -15,6 +15,6 @@ type Derializer interface {
     DeserializeInt() (int64, error)
     DeserializeString() (string, error)
     DeserializeFloat() (float64, error)
-    DeserializeStringKV() (map[string]string, error)
+    DeserializeStringMap() (map[string]string, error)
     Reset() error
 }

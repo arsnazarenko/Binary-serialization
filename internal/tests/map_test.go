@@ -1,54 +1,80 @@
 package internal
 
 import (
-	"bytes"
-	"testing"
-    "binary-serialization/internal"
+	"binary-serialization/internal"
 	"github.com/stretchr/testify/require"
+	"testing"
 )
 
 // Check Serialize - Deserialize
 func TestSerializeDeserializeMap(t *testing.T) {
 	t.Run("Map with one element", func(t *testing.T) {
-            
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
+		var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
 		input := map[string]string{
 			"Roman": "Golang Developer",
 		}
-		err := internal.SerializeMap(input, buf)
+
+		ser = internal.NewBinarySerializer( /*capacity*/ 50)
+		err := ser.SerializeStringMap(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeMap(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeStringMap()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
 	})
 
 	t.Run("Multiply elements map", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
+		var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
 		input := map[string]string{
 			"Arseniy": "Rust",
-			"Roman":  "Golang",
-			"Maria":  "Kotlin",
-			"Artem":  "Python",
-			"Igor":  "OCaml",
+			"Roman":   "Golang",
+			"Maria":   "Kotlin",
+			"Artem":   "Python",
+			"Igor":    "OCaml",
 		}
-		err := internal.SerializeMap(input, buf)
+
+		ser = internal.NewBinarySerializer( /*capacity*/ 50)
+		err := ser.SerializeStringMap(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeMap(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeStringMap()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
 	})
 
 	t.Run("Empty map", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
+
+		var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
 		input := map[string]string{}
-		err := internal.SerializeMap(input, buf)
+
+		ser = internal.NewBinarySerializer( /*capacity*/ 50)
+		err := ser.SerializeStringMap(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeMap(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeStringMap()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)

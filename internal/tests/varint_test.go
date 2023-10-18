@@ -1,7 +1,6 @@
 package internal
 
 import (
-	"bytes"
 	"math"
 	"testing"
     "binary-serialization/internal"
@@ -11,101 +10,194 @@ import (
 // Check Serialize - Deserialize
 func TestSerializeDeserializeVarint(t *testing.T) {
 	t.Run("Unsigned zero", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
+
+        var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
 		input := uint64(0)
-		err := internal.SerializeUint(input, buf)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeUint(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeUint(buf)
-		require.NoError(t, err)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
 
-		require.Equal(t, input, actual)
-	})
-
-	t.Run("Max value", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
-        input := uint64(math.MaxUint64)
-		err := internal.SerializeUint(input, buf)
-		require.NoError(t, err)
-
-		actual, err := internal.DeserializeUint(buf)
+		actual, err := deser.DeserializeUint()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
+
 	})
+
+	t.Run("Unsigned max value", func(t *testing.T) {
+
+        
+        var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
+		input := uint64(math.MaxUint64)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeUint(input)
+		require.NoError(t, err)
+
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeUint()
+		require.NoError(t, err)
+
+		require.Equal(t, input, actual)
+
+	})
+
+    t.Run("Some unsigned value", func(t *testing.T) {
+   
+     var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
+		input := uint64(10000001)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeUint(input)
+		require.NoError(t, err)
+
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeUint()
+		require.NoError(t, err)
+
+		require.Equal(t, input, actual)
+
+	})
+
+
 
 	t.Run("Signed zero", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
+       
+        var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
 		input := int64(0)
-		err := internal.SerializeInt(input, buf)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeInt(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeInt(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeInt()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
+
 	})
 
     t.Run("Signed min", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
+        
+        var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
 		input := int64(math.MinInt64)
-		err := internal.SerializeInt(input, buf)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeInt(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeInt(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeInt()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
+
 	})
     
     t.Run("Signed max", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
+        
+
+        var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
 		input := int64(math.MaxInt64)
-		err := internal.SerializeInt(input, buf)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeInt(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeInt(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeInt()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
+
 	})
     
     t.Run("Signed positive", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
-		input := int64(612132)
-		err := internal.SerializeInt(input, buf)
+
+        
+        var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
+		input := int64(980765)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeInt(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeInt(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeInt()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
+
 	})
 
 
     t.Run("Signed negative", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
-		input := int64(-450784)
-		err := internal.SerializeInt(input, buf)
+
+        
+        var (
+			ser   *internal.BinarySerializer
+			deser *internal.BinaryDeserializer
+		)
+
+		input := int64(-980765)
+        
+        ser = internal.NewBinarySerializer( /*capacity*/ 0)
+		err := ser.SerializeInt(input)
 		require.NoError(t, err)
 
-		actual, err := internal.DeserializeInt(buf)
+		bytes := ser.EndSerialize()
+		deser = internal.NewBinaryDeserializer(bytes)
+
+		actual, err := deser.DeserializeInt()
 		require.NoError(t, err)
 
 		require.Equal(t, input, actual)
+
 	})
-
-    t.Run("Some unsigned value", func(t *testing.T) {
-        buf := bytes.NewBuffer(make([]byte, 0, 50))
-		input := uint64(10240124)
-		err := internal.SerializeUint(input, buf)
-		require.NoError(t, err)
-
-		actual, err := internal.DeserializeUint(buf)
-		require.NoError(t, err)
-
-		require.Equal(t, input, actual)
-	})
-
 }
 
