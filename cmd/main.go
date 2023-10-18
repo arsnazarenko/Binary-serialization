@@ -1,10 +1,8 @@
 package main
 
 import (
-	bin "binary-serialization/internal"
-	"fmt"
-	"math"
-	// "math"
+    "binary-serialization/internal"
+    "fmt"
 )
 
 func Reverse[T any](input []T) []T {
@@ -18,25 +16,30 @@ func Reverse[T any](input []T) []T {
 	return output
 }
 
-// print varints in buf
 func debugSlice(buf []byte) {
-    buf = Reverse(buf)
-    fmt.Print("[[ ")
+	buf = Reverse(buf)
+	fmt.Print("[ ")
 	for _, byte := range buf {
 		fmt.Printf("%08b ", byte)
 	}
 	fmt.Print("]\n")
 }
 
+
+type UserKeyValue {
+    key string
+    value string
+    meta map[string]string
+}
+
+type Serializable interface {
+    Serialize(ser internal.Serializer) ([]byte, error)
+}
+
+type Deserializable interface {
+    Deserializable[](deser internal.Derializer) (error)
+}   
+
 func main() {
-	
-    array := []int64{0, -10, 10, -65564, math.MinInt64, math.MaxInt64}
-	for _, value := range array {
-        outBuf, _ := bin.SerializeInt(value)
-        res, offset, _ := bin.DeserializeInt(outBuf)
-        fmt.Printf("original: %d\n  result: %d\n", value, res)
-        fmt.Printf("offset: %d, ", offset)
-        debugSlice(outBuf)
-        fmt.Println()
-	}
+    
 }
